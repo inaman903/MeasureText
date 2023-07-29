@@ -1,0 +1,2 @@
+# MeasureText
+フォントサイズ調査
