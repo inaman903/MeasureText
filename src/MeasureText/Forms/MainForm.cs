@@ -56,6 +56,18 @@ namespace MeasureText
             UpdateTextPicture();
         }
 
+        private void guideXNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            // テキスト画像更新
+            UpdateTextPicture();
+        }
+
+        private void guideYNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            // テキスト画像更新
+            UpdateTextPicture();
+        }
+
         private void UpdateTextPicture()
         {
             try
@@ -66,6 +78,8 @@ namespace MeasureText
                 var fontFamily = (FontFamily)fontNameComboBox.SelectedItem ?? FontFamily.GenericMonospace;
                 var fontSize = (float)fontSizeNumericUpDown.Value;
                 var fontSizeUnit = (GraphicsUnit?)fontSizeUnitComboBox.SelectedItem ?? GraphicsUnit.Point;
+                var guideX = (float)guideXNumericUpDown.Value;
+                var guideY = (float)guideYNumericUpDown.Value;
 
                 // 描画リソース生成
                 var bitmap = new Bitmap(width, height);
@@ -74,6 +88,9 @@ namespace MeasureText
                 using var font = new Font(fontFamily, fontSize, FontStyle.Regular, fontSizeUnit);
                 using var format = StringFormat.GenericTypographic;
                 format.FormatFlags = StringFormatFlags.NoFontFallback;
+
+                using var guidelinePen = new Pen(Color.Orange, 1.0f);
+                guidelinePen.DashStyle = DashStyle.Dash;
 
                 using var baselinePen = new Pen(Color.Blue, 1.0f);
                 baselinePen.DashStyle = DashStyle.Dash;
@@ -118,6 +135,9 @@ namespace MeasureText
                 graphics.DrawLine(descentlinePen, new PointF(0.0f, descentlineY), new PointF(width, descentlineY));
                 // フレーム描画
                 graphics.DrawRectangle(framePen, frameRectF);
+                // ガイドライン描画
+                graphics.DrawLine(guidelinePen, new PointF(guideX, 0.0f), new PointF(guideX, height));
+                graphics.DrawLine(guidelinePen, new PointF(0.0f, guideY), new PointF(width, guideY));
 
                 // テキスト画像更新
                 var oldImage = textPictureBox.Image;
