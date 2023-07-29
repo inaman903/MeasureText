@@ -36,6 +36,7 @@
             textTextBox = new TextBox();
             infoTextBox = new TextBox();
             fontSizeNumericUpDown = new NumericUpDown();
+            fontSizeUnitComboBox = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)textPictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)fontSizeNumericUpDown).BeginInit();
             SuspendLayout();
@@ -56,7 +57,7 @@
             fontNameComboBox.FormattingEnabled = true;
             fontNameComboBox.Location = new Point(64, 8);
             fontNameComboBox.Name = "fontNameComboBox";
-            fontNameComboBox.Size = new Size(288, 23);
+            fontNameComboBox.Size = new Size(248, 23);
             fontNameComboBox.TabIndex = 1;
             fontNameComboBox.SelectedIndexChanged += fontNameComboBox_SelectedIndexChanged;
             // 
@@ -72,11 +73,11 @@
             // fontSizeLabel
             // 
             fontSizeLabel.AutoSize = true;
-            fontSizeLabel.Location = new Point(368, 8);
+            fontSizeLabel.Location = new Point(328, 8);
             fontSizeLabel.Name = "fontSizeLabel";
-            fontSizeLabel.Size = new Size(66, 15);
+            fontSizeLabel.Size = new Size(47, 15);
             fontSizeLabel.TabIndex = 4;
-            fontSizeLabel.Text = "サイズ(pt)：";
+            fontSizeLabel.Text = "サイズ：";
             // 
             // textLabel
             // 
@@ -92,23 +93,25 @@
             textTextBox.Location = new Point(64, 40);
             textTextBox.Name = "textTextBox";
             textTextBox.Size = new Size(472, 23);
-            textTextBox.TabIndex = 3;
+            textTextBox.TabIndex = 4;
             textTextBox.Text = "TEXT";
             textTextBox.TextChanged += textTextBox_TextChanged;
             // 
             // infoTextBox
             // 
+            infoTextBox.BorderStyle = BorderStyle.FixedSingle;
             infoTextBox.Location = new Point(544, 0);
             infoTextBox.Multiline = true;
             infoTextBox.Name = "infoTextBox";
             infoTextBox.ReadOnly = true;
             infoTextBox.Size = new Size(256, 224);
-            infoTextBox.TabIndex = 4;
+            infoTextBox.TabIndex = 5;
             // 
             // fontSizeNumericUpDown
             // 
             fontSizeNumericUpDown.DecimalPlaces = 2;
-            fontSizeNumericUpDown.Location = new Point(440, 8);
+            fontSizeNumericUpDown.Location = new Point(376, 8);
+            fontSizeNumericUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             fontSizeNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             fontSizeNumericUpDown.Name = "fontSizeNumericUpDown";
             fontSizeNumericUpDown.Size = new Size(96, 23);
@@ -116,17 +119,28 @@
             fontSizeNumericUpDown.Value = new decimal(new int[] { 16, 0, 0, 0 });
             fontSizeNumericUpDown.ValueChanged += fontSizeNumericUpDown_ValueChanged;
             // 
+            // fontSizeUnitComboBox
+            // 
+            fontSizeUnitComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            fontSizeUnitComboBox.FormattingEnabled = true;
+            fontSizeUnitComboBox.Location = new Point(480, 8);
+            fontSizeUnitComboBox.Name = "fontSizeUnitComboBox";
+            fontSizeUnitComboBox.Size = new Size(56, 23);
+            fontSizeUnitComboBox.TabIndex = 3;
+            fontSizeUnitComboBox.SelectedIndexChanged += fontSizeUnitComboBox_SelectedIndexChanged;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(801, 225);
+            ClientSize = new Size(800, 224);
             Controls.Add(fontSizeNumericUpDown);
             Controls.Add(infoTextBox);
             Controls.Add(textTextBox);
             Controls.Add(textLabel);
             Controls.Add(fontSizeLabel);
             Controls.Add(fontNameLabel);
+            Controls.Add(fontSizeUnitComboBox);
             Controls.Add(fontNameComboBox);
             Controls.Add(textPictureBox);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -150,5 +164,6 @@
         private TextBox textTextBox;
         private TextBox infoTextBox;
         private NumericUpDown fontSizeNumericUpDown;
+        private ComboBox fontSizeUnitComboBox;
     }
 }
