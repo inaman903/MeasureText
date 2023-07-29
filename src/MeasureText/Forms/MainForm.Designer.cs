@@ -37,15 +37,20 @@
             infoTextBox = new TextBox();
             fontSizeNumericUpDown = new NumericUpDown();
             fontSizeUnitComboBox = new ComboBox();
+            guideLabel = new Label();
+            guideXNumericUpDown = new NumericUpDown();
+            guideYNumericUpDown = new NumericUpDown();
             ((System.ComponentModel.ISupportInitialize)textPictureBox).BeginInit();
             ((System.ComponentModel.ISupportInitialize)fontSizeNumericUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)guideXNumericUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)guideYNumericUpDown).BeginInit();
             SuspendLayout();
             // 
             // textPictureBox
             // 
             textPictureBox.BackColor = Color.White;
             textPictureBox.BorderStyle = BorderStyle.Fixed3D;
-            textPictureBox.Location = new Point(0, 72);
+            textPictureBox.Location = new Point(0, 104);
             textPictureBox.Name = "textPictureBox";
             textPictureBox.Size = new Size(544, 152);
             textPictureBox.TabIndex = 0;
@@ -57,7 +62,7 @@
             fontNameComboBox.FormattingEnabled = true;
             fontNameComboBox.Location = new Point(64, 8);
             fontNameComboBox.Name = "fontNameComboBox";
-            fontNameComboBox.Size = new Size(248, 23);
+            fontNameComboBox.Size = new Size(256, 23);
             fontNameComboBox.TabIndex = 1;
             fontNameComboBox.SelectedIndexChanged += fontNameComboBox_SelectedIndexChanged;
             // 
@@ -104,12 +109,12 @@
             infoTextBox.Multiline = true;
             infoTextBox.Name = "infoTextBox";
             infoTextBox.ReadOnly = true;
-            infoTextBox.Size = new Size(256, 224);
-            infoTextBox.TabIndex = 5;
+            infoTextBox.Size = new Size(256, 256);
+            infoTextBox.TabIndex = 7;
             // 
             // fontSizeNumericUpDown
             // 
-            fontSizeNumericUpDown.DecimalPlaces = 2;
+            fontSizeNumericUpDown.DecimalPlaces = 5;
             fontSizeNumericUpDown.Location = new Point(376, 8);
             fontSizeNumericUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
             fontSizeNumericUpDown.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
@@ -129,11 +134,43 @@
             fontSizeUnitComboBox.TabIndex = 3;
             fontSizeUnitComboBox.SelectedIndexChanged += fontSizeUnitComboBox_SelectedIndexChanged;
             // 
+            // guideLabel
+            // 
+            guideLabel.AutoSize = true;
+            guideLabel.Location = new Point(16, 72);
+            guideLabel.Name = "guideLabel";
+            guideLabel.Size = new Size(45, 15);
+            guideLabel.TabIndex = 6;
+            guideLabel.Text = "ガイド：";
+            // 
+            // guideXNumericUpDown
+            // 
+            guideXNumericUpDown.DecimalPlaces = 5;
+            guideXNumericUpDown.Location = new Point(64, 72);
+            guideXNumericUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            guideXNumericUpDown.Name = "guideXNumericUpDown";
+            guideXNumericUpDown.Size = new Size(96, 23);
+            guideXNumericUpDown.TabIndex = 5;
+            guideXNumericUpDown.ValueChanged += guideXNumericUpDown_ValueChanged;
+            // 
+            // guideYNumericUpDown
+            // 
+            guideYNumericUpDown.DecimalPlaces = 5;
+            guideYNumericUpDown.Location = new Point(168, 72);
+            guideYNumericUpDown.Maximum = new decimal(new int[] { 1000, 0, 0, 0 });
+            guideYNumericUpDown.Name = "guideYNumericUpDown";
+            guideYNumericUpDown.Size = new Size(96, 23);
+            guideYNumericUpDown.TabIndex = 6;
+            guideYNumericUpDown.ValueChanged += guideYNumericUpDown_ValueChanged;
+            // 
             // MainForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 224);
+            ClientSize = new Size(800, 256);
+            Controls.Add(guideYNumericUpDown);
+            Controls.Add(guideXNumericUpDown);
+            Controls.Add(guideLabel);
             Controls.Add(fontSizeNumericUpDown);
             Controls.Add(infoTextBox);
             Controls.Add(textTextBox);
@@ -150,6 +187,8 @@
             Load += MainForm_Load;
             ((System.ComponentModel.ISupportInitialize)textPictureBox).EndInit();
             ((System.ComponentModel.ISupportInitialize)fontSizeNumericUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)guideXNumericUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)guideYNumericUpDown).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -165,5 +204,8 @@
         private TextBox infoTextBox;
         private NumericUpDown fontSizeNumericUpDown;
         private ComboBox fontSizeUnitComboBox;
+        private Label guideLabel;
+        private NumericUpDown guideXNumericUpDown;
+        private NumericUpDown guideYNumericUpDown;
     }
 }
