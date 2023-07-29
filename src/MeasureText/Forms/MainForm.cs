@@ -16,14 +16,20 @@ namespace MeasureText
         private void MainForm_Load(object sender, EventArgs e)
         {
             // フォントファミリ
+            fontNameComboBox.DisplayMember = "Name";
             foreach (var family in FontFamily.Families)
             {
-                fontNameComboBox.Items.Add(family.Name);
+                fontNameComboBox.Items.Add(family);
             }
             if (fontNameComboBox.Items.Count > 0)
             {
                 fontNameComboBox.SelectedIndex = 0;
             }
+
+            // フォントサイズ単位
+            fontSizeUnitComboBox.Items.Add(GraphicsUnit.Point);
+            fontSizeUnitComboBox.Items.Add(GraphicsUnit.Pixel);
+            fontSizeUnitComboBox.SelectedIndex = 0;
         }
 
         private void fontNameComboBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -38,7 +44,25 @@ namespace MeasureText
             UpdateTextPicture();
         }
 
+        private void fontSizeUnitComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // テキスト画像更新
+            UpdateTextPicture();
+        }
+
         private void textTextBox_TextChanged(object sender, EventArgs e)
+        {
+            // テキスト画像更新
+            UpdateTextPicture();
+        }
+
+        private void guideXNumericUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            // テキスト画像更新
+            UpdateTextPicture();
+        }
+
+        private void guideYNumericUpDown_ValueChanged(object sender, EventArgs e)
         {
             // テキスト画像更新
             UpdateTextPicture();
@@ -51,16 +75,22 @@ namespace MeasureText
                 var text = textTextBox.Text;
                 var width = textPictureBox.Width;
                 var height = textPictureBox.Height;
-                var fontName = fontNameComboBox.SelectedItem?.ToString() ?? string.Empty;
+                var fontFamily = (FontFamily)fontNameComboBox.SelectedItem ?? FontFamily.GenericMonospace;
                 var fontSize = (float)fontSizeNumericUpDown.Value;
+                var fontSizeUnit = (GraphicsUnit?)fontSizeUnitComboBox.SelectedItem ?? GraphicsUnit.Point;
+                var guideX = (float)guideXNumericUpDown.Value;
+                var guideY = (float)guideYNumericUpDown.Value;
 
                 // 描画リソース生成
                 var bitmap = new Bitmap(width, height);
                 using var graphics = Graphics.FromImage(bitmap);
                 graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
-                using var font = new Font(fontName, fontSize, FontStyle.Regular, GraphicsUnit.Point);
+                using var font = new Font(fontFamily, fontSize, FontStyle.Regular, fontSizeUnit);
                 using var format = StringFormat.GenericTypographic;
                 format.FormatFlags = StringFormatFlags.NoFontFallback;
+
+                using var guidelinePen = new Pen(Color.Orange, 1.0f);
+                guidelinePen.DashStyle = DashStyle.Dash;
 
                 using var baselinePen = new Pen(Color.Blue, 1.0f);
                 baselinePen.DashStyle = DashStyle.Dash;
@@ -71,12 +101,20 @@ namespace MeasureText
                 using var framePen = new Pen(Color.Red, 1);
 
                 // フォント情報取得
-                var family = font.FontFamily;
-                var ascent = family.GetCellAscent(font.Style);
-                var descent = family.GetCellDescent(font.Style);
-                var emHeight = family.GetEmHeight(font.Style);
+                var ascent = fontFamily.GetCellAscent(font.Style);
+                var descent = fontFamily.GetCellDescent(font.Style);
+                var emHeight = fontFamily.GetEmHeight(font.Style);
 
-                var fontSizePx = font.SizeInPoints / 72.0f * 96.0f;
+                var fontSizePx = 0.0f;
+                switch (fontSizeUnit)
+                {
+                    case GraphicsUnit.Point:
+                        fontSizePx = font.SizeInPoints / 72.0f * 96.0f;
+                        break;
+                    case GraphicsUnit.Pixel:
+                        fontSizePx = font.Size;
+                        break;
+                }
                 var fontHeight = font.GetHeight(graphics);
                 var ascentHeight = fontSizePx * ascent / emHeight;
                 var descentHeight = fontSizePx * descent / emHeight;
@@ -97,6 +135,9 @@ namespace MeasureText
                 graphics.DrawLine(descentlinePen, new PointF(0.0f, descentlineY), new PointF(width, descentlineY));
                 // フレーム描画
                 graphics.DrawRectangle(framePen, frameRectF);
+                // ガイドライン描画
+                graphics.DrawLine(guidelinePen, new PointF(guideX, 0.0f), new PointF(guideX, height));
+                graphics.DrawLine(guidelinePen, new PointF(0.0f, guideY), new PointF(width, guideY));
 
                 // テキスト画像更新
                 var oldImage = textPictureBox.Image;
@@ -105,12 +146,12 @@ namespace MeasureText
 
                 // テキスト情報更新
                 var info = new StringBuilder();
+                info.AppendLine($"フォント：{fontFamily.Name}");
+                info.AppendLine($"サイズ({fontSizeUnit})：{fontSize}");
                 info.AppendLine($"テキスト：{text}");
-                info.AppendLine($"フォント：{fontName}");
-                info.AppendLine($"サイズ(pt)：{fontSize}");
-                info.AppendLine($"ベースラインY(px)：{baselineY}");
-                info.AppendLine($"ディセンダラインY(px)：{descentlineY}");
-                info.AppendLine($"フレームXYWH(px)：{frameRectF.X},{frameRectF.Y},{frameRectF.Width},{frameRectF.Height}");
+                info.AppendLine($"ベースラインY({GraphicsUnit.Pixel})：{baselineY}");
+                info.AppendLine($"ディセンダラインY({GraphicsUnit.Pixel})：{descentlineY}");
+                info.AppendLine($"フレームXYWH({GraphicsUnit.Pixel})：{frameRectF.X},{frameRectF.Y},{frameRectF.Width},{frameRectF.Height}");
                 infoTextBox.Text = info.ToString();
             }
             catch (Exception ex)
