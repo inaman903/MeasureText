@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MeasureText", "MeasureText\MeasureText.csproj", "{53142839-EDD3-4EAF-842B-376C51DDF84A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{53142839-EDD3-4EAF-842B-376C51DDF84A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{53142839-EDD3-4EAF-842B-376C51DDF84A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{53142839-EDD3-4EAF-842B-376C51DDF84A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{53142839-EDD3-4EAF-842B-376C51DDF84A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {456BC514-9917-4599-8F95-5FB233A7EF0D}
+	EndGlobalSection
+EndGlobal
