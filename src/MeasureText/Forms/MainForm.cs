@@ -1,13 +1,17 @@
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
+using SkiaSharp;
+using SkiaSharp.Views.Desktop;
 using System.Text;
-using System.Windows.Forms;
 
 namespace MeasureText
 {
     public partial class MainForm : Form
     {
+        private enum FontSizeUnit
+        {
+            Point,
+            Pixel
+        }
+
         public MainForm()
         {
             InitializeComponent();
@@ -16,23 +20,22 @@ namespace MeasureText
         private void MainForm_Load(object sender, EventArgs e)
         {
             // フォントファミリ
-            fontNameComboBox.DisplayMember = "Name";
-            foreach (var family in FontFamily.Families)
+            foreach (var fontFamily in SKFontManager.Default.FontFamilies)
             {
-                fontNameComboBox.Items.Add(family);
+                fontFamilyNameComboBox.Items.Add(fontFamily);
             }
-            if (fontNameComboBox.Items.Count > 0)
+            if (fontFamilyNameComboBox.Items.Count > 0)
             {
-                fontNameComboBox.SelectedIndex = 0;
+                fontFamilyNameComboBox.SelectedIndex = 0;
             }
 
             // フォントサイズ単位
-            fontSizeUnitComboBox.Items.Add(GraphicsUnit.Point);
-            fontSizeUnitComboBox.Items.Add(GraphicsUnit.Pixel);
+            fontSizeUnitComboBox.Items.Add(FontSizeUnit.Point);
+            fontSizeUnitComboBox.Items.Add(FontSizeUnit.Pixel);
             fontSizeUnitComboBox.SelectedIndex = 0;
         }
 
-        private void fontNameComboBox_SelectedIndexChanged(object sender, EventArgs e)
+        private void fontFamilyNameComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             // テキスト画像更新
             UpdateTextPicture();
@@ -68,6 +71,12 @@ namespace MeasureText
             UpdateTextPicture();
         }
 
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            // テキスト画像更新
+            UpdateTextPicture();
+        }
+
         private void UpdateTextPicture()
         {
             try
@@ -75,89 +84,124 @@ namespace MeasureText
                 var text = textTextBox.Text;
                 var width = textPictureBox.Width;
                 var height = textPictureBox.Height;
-                var fontFamily = (FontFamily)fontNameComboBox.SelectedItem ?? FontFamily.GenericMonospace;
+                var fontFamilyName = (string?)fontFamilyNameComboBox.SelectedItem ?? string.Empty;
                 var fontSize = (float)fontSizeNumericUpDown.Value;
-                var fontSizeUnit = (GraphicsUnit?)fontSizeUnitComboBox.SelectedItem ?? GraphicsUnit.Point;
+                var fontSizeUnit = (FontSizeUnit?)fontSizeUnitComboBox.SelectedItem ?? FontSizeUnit.Point;
                 var guideX = (float)guideXNumericUpDown.Value;
                 var guideY = (float)guideYNumericUpDown.Value;
 
                 // 描画リソース生成
-                var bitmap = new Bitmap(width, height);
-                using var graphics = Graphics.FromImage(bitmap);
-                graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
-                using var font = new Font(fontFamily, fontSize, FontStyle.Regular, fontSizeUnit);
-                using var format = StringFormat.GenericTypographic;
-                format.FormatFlags = StringFormatFlags.NoFontFallback;
+                using var paint = new SKPaint();
+                using var bitmap = new SKBitmap(width, height);
+                using var canvas = new SKCanvas(bitmap);
+                canvas.Clear(SKColors.White);
 
-                using var guidelinePen = new Pen(Color.Orange, 1.0f);
-                guidelinePen.DashStyle = DashStyle.Dash;
-
-                using var baselinePen = new Pen(Color.Blue, 1.0f);
-                baselinePen.DashStyle = DashStyle.Dash;
-
-                using var descentlinePen = new Pen(Color.Green, 1.0f);
-                descentlinePen.DashStyle = DashStyle.Dash;
-
-                using var framePen = new Pen(Color.Red, 1);
-
-                // フォント情報取得
-                var ascent = fontFamily.GetCellAscent(font.Style);
-                var descent = fontFamily.GetCellDescent(font.Style);
-                var emHeight = fontFamily.GetEmHeight(font.Style);
-
-                var fontSizePx = 0.0f;
+                // フォント情報を取得
+                using var typeFace = SKTypeface.FromFamilyName(fontFamilyName, SKFontStyle.Normal);
+                var pxFontSize = 0.0f;
                 switch (fontSizeUnit)
                 {
-                    case GraphicsUnit.Point:
-                        fontSizePx = font.SizeInPoints / 72.0f * 96.0f;
+                    case FontSizeUnit.Point:
+                        pxFontSize = fontSize / 72.0f * 96.0f;
                         break;
-                    case GraphicsUnit.Pixel:
-                        fontSizePx = font.Size;
+                    case FontSizeUnit.Pixel:
+                        pxFontSize = fontSize;
                         break;
                 }
-                var fontHeight = font.GetHeight(graphics);
-                var ascentHeight = fontSizePx * ascent / emHeight;
-                var descentHeight = fontSizePx * descent / emHeight;
 
-                // ベースライン、ディセンダラインY座標算出
-                var baselineY = 0.0f + ascentHeight;
-                var descentlineY = ascentHeight + descentHeight;
+                // テキストフォントメトリクスを取得
+                paint.Typeface = typeFace;
+                paint.TextSize = pxFontSize;
+                var textFontMetrics = paint.FontMetrics;
+                var baseline = -textFontMetrics.Top;
 
-                // フレーム座標算出
-                var frameSize = graphics.MeasureString(text, font, int.MaxValue, format);
-                var frameRectF = new RectangleF(0.0f, 0.0f, frameSize.Width, frameSize.Height);
+                // Top描画
+                var top = 0.0f;
+                paint.Color = SKColors.Pink;
+                paint.StrokeWidth = 1.0f;
+                canvas.DrawLine(0.0f, top, width, top, paint);
+
+                // Ascent描画
+                var ascent = baseline + textFontMetrics.Ascent;
+                paint.Color = SKColors.Green;
+                paint.StrokeWidth = 1.0f;
+                canvas.DrawLine(0.0f, ascent , width, ascent, paint);
+
+                // CapHeight描画
+                var capHeight = baseline - textFontMetrics.CapHeight;
+                paint.Color = SKColors.Purple;
+                paint.StrokeWidth = 1.0f;
+                canvas.DrawLine(0.0f, capHeight, width, capHeight, paint);
+
+                // XHeight描画
+                var xHeight = baseline - textFontMetrics.XHeight;
+                paint.Color = SKColors.DarkGray;
+                paint.StrokeWidth = 1.0f;
+                canvas.DrawLine(0.0f, xHeight, width, xHeight, paint);
+
+                // Baseline描画
+                paint.Color = SKColors.Red;
+                paint.StrokeWidth = 1.0f;
+                canvas.DrawLine(0.0f, baseline, width, baseline, paint);
+
+                // Descent描画
+                var descent = baseline + textFontMetrics.Descent;
+                paint.Color = SKColors.Green;
+                paint.StrokeWidth = 1.0f;
+                canvas.DrawLine(0.0f, descent, width, descent, paint);
+
+                // Bottom描画
+                var bottom = baseline + textFontMetrics.Bottom;
+                paint.Color = SKColors.Pink;
+                paint.StrokeWidth = 1.0f;
+                canvas.DrawLine(0.0f, bottom, width, bottom, paint);
+
+                // テキスト幅描画
+                var textWidth = paint.MeasureText(text);
+                paint.Color = SKColors.Blue;
+                paint.StrokeWidth = 1.0f;
+                canvas.DrawLine(0.0f, 0.0f, 0.0f, bottom, paint);
+                canvas.DrawLine(textWidth, 0.0f, textWidth, bottom, paint);
 
                 // テキスト描画
-                graphics.DrawString(text, font, Brushes.Black, PointF.Empty, format);
-                // ベースライン描画
-                graphics.DrawLine(baselinePen, new PointF(0.0f, baselineY), new PointF(width, baselineY));
-                // ディセンダライン描画
-                graphics.DrawLine(descentlinePen, new PointF(0.0f, descentlineY), new PointF(width, descentlineY));
-                // フレーム描画
-                graphics.DrawRectangle(framePen, frameRectF);
-                // ガイドライン描画
-                graphics.DrawLine(guidelinePen, new PointF(guideX, 0.0f), new PointF(guideX, height));
-                graphics.DrawLine(guidelinePen, new PointF(0.0f, guideY), new PointF(width, guideY));
+                paint.Color = SKColors.Black;
+                canvas.DrawText(text, 0.0f, baseline, paint);
+
+                // ガイド描画
+                paint.Color = SKColors.Orange;
+                paint.StrokeWidth = 1.0f;
+                canvas.DrawLine(guideX, 0.0f, guideX, height, paint);
+                canvas.DrawLine(0.0f, guideY, width, guideY, paint);
 
                 // テキスト画像更新
                 var oldImage = textPictureBox.Image;
-                textPictureBox.Image = bitmap;
+                textPictureBox.Image = bitmap.ToBitmap();
                 oldImage?.Dispose();
 
                 // テキスト情報更新
                 var info = new StringBuilder();
-                info.AppendLine($"フォント：{fontFamily.Name}");
-                info.AppendLine($"サイズ({fontSizeUnit})：{fontSize}");
-                info.AppendLine($"テキスト：{text}");
-                info.AppendLine($"ベースラインY({GraphicsUnit.Pixel})：{baselineY}");
-                info.AppendLine($"ディセンダラインY({GraphicsUnit.Pixel})：{descentlineY}");
-                info.AppendLine($"フレームXYWH({GraphicsUnit.Pixel})：{frameRectF.X},{frameRectF.Y},{frameRectF.Width},{frameRectF.Height}");
+                info.AppendLine("[Font]");
+                info.AppendLine($"FontFamilyName：{fontFamilyName}");
+                info.AppendLine($"FontSize：{fontSize} {(fontSizeUnit == FontSizeUnit.Point ? "pt" : "px")}");
+                info.AppendLine();
+                info.AppendLine("[Text]");
+                info.AppendLine($"Text：{text}");
+                info.AppendLine($"TextWidth(Blue)：{textWidth} px");
+                info.AppendLine();
+                info.AppendLine("[FontMetrics]");
+                info.AppendLine($"Top(Pink)：{top} px");
+                info.AppendLine($"Ascent(Green)：{ascent} px");
+                info.AppendLine($"CapHeight(Purple)：{capHeight} px");
+                info.AppendLine($"XHeight(DarkGray)：{xHeight} px");
+                info.AppendLine($"Baseline(Red)：{baseline} px");
+                info.AppendLine($"Descent(Green)：{descent} px");
+                info.AppendLine($"Bottom(Pink)：{bottom} px");
                 infoTextBox.Text = info.ToString();
             }
             catch (Exception ex)
             {
                 var msg = new StringBuilder();
-                msg.AppendLine("テキスト画像の描画に失敗しました");
+                msg.AppendLine("テキスト計測に失敗しました");
                 msg.AppendLine();
                 msg.AppendLine("エラー：");
                 msg.AppendLine(ex.Message);
