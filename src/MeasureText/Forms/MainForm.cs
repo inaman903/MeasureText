@@ -110,64 +110,85 @@ namespace MeasureText
                 }
 
                 // テキストフォントメトリクスを取得
+                paint.Reset();
                 paint.Typeface = typeFace;
                 paint.TextSize = pxFontSize;
                 var textFontMetrics = paint.FontMetrics;
                 var baseline = -textFontMetrics.Top;
 
+                // 文字エリア描画
+                //paint.Reset();
+                //paint.Color = SKColors.LightYellow;
+                //paint.Style = SKPaintStyle.Fill;
+                //canvas.DrawRect(0.0f, baseline - textFontMetrics.XHeight / 2.0f - pxFontSize / 2.0f, width, pxFontSize, paint);
+
                 // Top描画
                 var top = 0.0f;
+                paint.Reset();
                 paint.Color = SKColors.Pink;
                 paint.StrokeWidth = 1.0f;
                 canvas.DrawLine(0.0f, top, width, top, paint);
 
                 // Ascent描画
                 var ascent = baseline + textFontMetrics.Ascent;
+                paint.Reset();
                 paint.Color = SKColors.Green;
                 paint.StrokeWidth = 1.0f;
-                canvas.DrawLine(0.0f, ascent , width, ascent, paint);
+                canvas.DrawLine(0.0f, ascent, width, ascent, paint);
 
                 // CapHeight描画
                 var capHeight = baseline - textFontMetrics.CapHeight;
+                paint.Reset();
                 paint.Color = SKColors.Purple;
                 paint.StrokeWidth = 1.0f;
                 canvas.DrawLine(0.0f, capHeight, width, capHeight, paint);
 
                 // XHeight描画
                 var xHeight = baseline - textFontMetrics.XHeight;
+                paint.Reset();
                 paint.Color = SKColors.DarkGray;
                 paint.StrokeWidth = 1.0f;
                 canvas.DrawLine(0.0f, xHeight, width, xHeight, paint);
 
                 // Baseline描画
+                paint.Reset();
                 paint.Color = SKColors.Red;
                 paint.StrokeWidth = 1.0f;
                 canvas.DrawLine(0.0f, baseline, width, baseline, paint);
 
                 // Descent描画
                 var descent = baseline + textFontMetrics.Descent;
+                paint.Reset();
                 paint.Color = SKColors.Green;
                 paint.StrokeWidth = 1.0f;
                 canvas.DrawLine(0.0f, descent, width, descent, paint);
 
                 // Bottom描画
                 var bottom = baseline + textFontMetrics.Bottom;
+                paint.Reset();
                 paint.Color = SKColors.Pink;
                 paint.StrokeWidth = 1.0f;
                 canvas.DrawLine(0.0f, bottom, width, bottom, paint);
 
                 // テキスト幅描画
                 var textWidth = paint.MeasureText(text);
+                paint.Reset();
+                paint.Typeface = typeFace;
+                paint.TextSize = pxFontSize;
                 paint.Color = SKColors.Blue;
                 paint.StrokeWidth = 1.0f;
                 canvas.DrawLine(0.0f, 0.0f, 0.0f, bottom, paint);
                 canvas.DrawLine(textWidth, 0.0f, textWidth, bottom, paint);
 
                 // テキスト描画
+                paint.Reset();
+                paint.Typeface = typeFace;
+                paint.TextSize = pxFontSize;
                 paint.Color = SKColors.Black;
                 canvas.DrawText(text, 0.0f, baseline, paint);
 
                 // ガイド描画
+                paint.Reset();
                 paint.Color = SKColors.Orange;
                 paint.StrokeWidth = 1.0f;
                 canvas.DrawLine(guideX, 0.0f, guideX, height, paint);
