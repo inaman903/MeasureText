@@ -115,7 +115,7 @@
             fontSizeNumericUpDown.Name = "fontSizeNumericUpDown";
             fontSizeNumericUpDown.Size = new Size(103, 23);
             fontSizeNumericUpDown.TabIndex = 2;
-            fontSizeNumericUpDown.Value = new decimal(new int[] { 32, 0, 0, 0 });
+            fontSizeNumericUpDown.Value = new decimal(new int[] { 200, 0, 0, 0 });
             fontSizeNumericUpDown.ValueChanged += fontSizeNumericUpDown_ValueChanged;
             // 
             // fontSizeUnitComboBox
